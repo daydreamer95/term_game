@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	game := newGame()
+	game := NewGame()
+	game.mustBeforeGame()
 	go game.listenForKeyPress()
 
 	//listen for terminate
@@ -31,7 +32,6 @@ func (g *Game) listenForKeyPress() {
 	// do not display entered characters on the screen
 	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
 
-	fmt.Println("Start typing:")
 	var b []byte = make([]byte, 1)
 	for {
 		_, err := os.Stdin.Read(b)

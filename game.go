@@ -1,9 +1,10 @@
 package main
 
 type Game struct {
-	score int
-	snake *Snake
-	food  position
+	score  int
+	snake  *Snake
+	food   position
+	drawer *TermDrawer
 }
 
 type Snake struct {
@@ -22,7 +23,7 @@ const (
 	right
 )
 
-func newSnake() *Snake {
+func NewSnake() *Snake {
 	//TODO: Remove hardcode
 	maxX, maxY := 10, 10
 	pos := position{maxX / 2, maxY / 2}
@@ -33,13 +34,20 @@ func newSnake() *Snake {
 	}
 }
 
-func newGame() *Game {
-	newGameSnake := newSnake()
+func NewGame() *Game {
+	newGameSnake := NewSnake()
 
 	game := &Game{
-		score: 0,
-		snake: newGameSnake,
-		food:  position{},
+		score:  0,
+		snake:  newGameSnake,
+		food:   position{},
+		drawer: NewTermDrawer(),
 	}
 	return game
+}
+
+func (g *Game) mustBeforeGame() {
+	//g.drawer.HideCursor()
+	g.drawer.MoveCursor([2]int{1, 10})
+	g.drawer.ShowCursor()
 }
