@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 	"syscall"
 )
@@ -26,9 +26,29 @@ func main() {
 }
 
 func (g *Game) listenForKeyPress() {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter text: ")
-	//scanner := bufio.NewScanner(reader)
-	text, _ := reader.ReadString('\n')
-	fmt.Println(text)
+	// disable input buffering
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	// do not display entered characters on the screen
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+
+	fmt.Println("Start typing:")
+	var b []byte = make([]byte, 1)
+	for {
+		_, err := os.Stdin.Read(b)
+		if err != nil {
+			panic(err)
+			return
+		}
+		switch string(b) {
+		case "A":
+			g.snake.direction = up
+		case "B":
+			g.snake.direction = down
+		case "C":
+			g.snake.direction = right
+		case "D":
+			g.snake.direction = left
+		}
+		fmt.Println("I got the byte", b, "("+string(b)+")")
+	}
 }

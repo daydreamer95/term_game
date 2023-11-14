@@ -16,10 +16,10 @@ type position [2]int
 type direction int
 
 const (
-	north direction = iota
-	east
-	south
-	west
+	up direction = iota
+	down
+	left
+	right
 )
 
 func newSnake() *Snake {
@@ -29,7 +29,7 @@ func newSnake() *Snake {
 
 	return &Snake{
 		body:      []position{pos},
-		direction: north,
+		direction: up,
 	}
 }
 
