@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/mattn/go-tty"
+	"log"
 	"os"
-	"os/exec"
 	"os/signal"
 	"syscall"
 )
@@ -11,6 +12,7 @@ import (
 func main() {
 	game := NewGame()
 	game.mustBeforeGame()
+	game.Start()
 	go game.listenForKeyPress()
 
 	//listen for terminate
@@ -19,6 +21,7 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
+		game.drawer.ShowCursor()
 		os.Exit(1)
 	}()
 	<-done
@@ -27,10 +30,16 @@ func main() {
 }
 
 func (g *Game) listenForKeyPress() {
-	// disable input buffering
-	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
-	// do not display entered characters on the screen
-	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+	//// disable input buffering
+	//exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	//// do not display entered characters on the screen
+	//exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+
+	// Tty lib using
+	_, err := tty.Open()
+	if err != nil {
+		log.Fatalf("Application orcur error")
+	}
 
 	var b []byte = make([]byte, 1)
 	for {

@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/term"
+	"os"
 )
 
 type Writer struct {
@@ -17,9 +19,8 @@ type TermDrawer struct {
 }
 
 func NewTermDrawer() *TermDrawer {
-	w := Writer{}
 	return &TermDrawer{
-		buf: bufio.NewWriter(&w),
+		buf: bufio.NewWriter(os.Stdout),
 	}
 }
 
@@ -39,6 +40,18 @@ func (t *TermDrawer) MoveCursor(pos [2]int) {
 	fmt.Fprintf(t.buf, "\u001b[%d;%dH", pos[1], pos[0])
 }
 
+func (t *TermDrawer) Write(s string) {
+	fmt.Fprintf(t.buf, s)
+}
+
 func (t *TermDrawer) Render() {
 	t.buf.Flush()
+}
+
+func getTermSize() (int, int) {
+	w, h, err := term.GetSize(0)
+	if err != nil {
+		return 0, 0
+	}
+	return w, h
 }
